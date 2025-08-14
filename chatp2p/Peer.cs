@@ -59,10 +59,21 @@ public class Peer
     {
         try
         {
-            var stream = _tcpClient!.GetStream();
-            var reader = new StreamReader(stream, Encoding.UTF8);
-            var message = await reader.ReadLineAsync();
-            Console.WriteLine($"Peer message: {message}");
+            while (_tcpClient != null && _tcpClient.Connected)
+            {
+                var stream = _tcpClient.GetStream();
+                var reader = new StreamReader(stream, Encoding.UTF8);
+                var message = await reader.ReadLineAsync();
+
+                if (message == null)
+                {
+                    Console.WriteLine("Chat desconectado, Adios Vaquero");
+                    Close();
+                    break;
+                }
+
+                Console.WriteLine($"RECIBIDO: {message}");
+            }
         }
         catch (Exception ex)
         {
@@ -87,8 +98,18 @@ public class Peer
         {
             var stream = _tcpClient!.GetStream();
             var writer = new StreamWriter(stream, Encoding.UTF8) { AutoFlush = true };
-            var message = "Holiwis este es mi mensaje";
-            await writer.WriteLineAsync(message);
+
+            while (true)
+            {
+                var mensaje = Console.ReadLine();
+                if (string.IsNullOrEmpty(mensaje))
+                {
+                    Close();
+                    break; 
+                }
+                await writer.WriteLineAsync(mensaje);
+            }
+
         }
         catch (Exception ex)
         {
@@ -96,7 +117,7 @@ public class Peer
         }
         finally
         {
-            Close();
+          
         }
     }
 }
