@@ -1,7 +1,8 @@
 using PokemonApi.Infrastructure;
-
+using PokemonApi.Services;
 using SoapCore;
 using PokemonApi.Infrastructure;
+using PokemonApi.Repositories;
 using Microsoft.EntityFrameworkCore;
 using PokemonApi.Services;
 
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSoapCore();
 //configuracion del aplicativo de soap
 
+builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 builder.Services.AddSingleton<IPokemonService, PokemonService>();
 
 builder.Services.AddDbContext<RelationalDbContext>(options =>
