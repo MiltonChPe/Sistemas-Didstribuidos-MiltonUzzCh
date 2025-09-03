@@ -1,3 +1,4 @@
+using PokemonApi.Dtos;
 using PokemonApi.Models;
 
 namespace PokemonApi.Repositories;
@@ -10,5 +11,9 @@ public interface IPokemonRepository
 
     Task<Pokemon> GetPokemonByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<Pokemon>> GetPokemonsByNameAsync(string name,CancellationToken cancellationToken);
+    Task<IReadOnlyList<Pokemon>> GetPokemonsByNameAsync(string name, CancellationToken cancellationToken);
+
+    Task DeletePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
+
+    Task UpdatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
 }
