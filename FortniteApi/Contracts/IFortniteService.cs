@@ -9,5 +9,11 @@ public interface IFortniteService
 {
     [OperationContract]
     Task<CosmeticResponseDto> CreateCosmetic(CreateCosmeticDto cosmetic, CancellationToken cancellationToken);
-   
+
+    [OperationContract]
+    Task<DeleteCosmeticResponseDto> DeleteCosmetic(Guid id, CancellationToken cancellationToken);
+
+    [OperationContract]
+    Task<CosmeticResponseDto> GetCosmeticById(Guid id, CancellationToken cancellationToken);
+
 }
