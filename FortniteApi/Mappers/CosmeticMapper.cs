@@ -65,4 +65,14 @@ public static class CosmeticMapper
         };
     }
 
+    public static IList<CosmeticResponseDto> ToResponseDto(this IReadOnlyList<Cosmetic> cosmetics)
+    {
+        return cosmetics.Select(c => c.ToResponseDto()).ToList();
+    }
+    
+    public static IReadOnlyList<Cosmetic> ToModel(this IReadOnlyList<FortniteEntity> cosmetics)
+    {
+        return cosmetics.Select(c => c.ToModel()).ToList();
+    }
+
 }
