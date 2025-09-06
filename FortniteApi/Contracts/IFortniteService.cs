@@ -16,4 +16,9 @@ public interface IFortniteService
     [OperationContract]
     Task<CosmeticResponseDto> GetCosmeticById(Guid id, CancellationToken cancellationToken);
 
+    [OperationContract]
+    Task<CosmeticResponseDto> UpdateCosmetic(UpdateCosmeticDto cosmetic, CancellationToken cancellationToken);
+
+    [OperationContract]
+    Task<IList<CosmeticResponseDto>> GetCosmeticByRarity(string rarity, CancellationToken cancellationToken);
 }
