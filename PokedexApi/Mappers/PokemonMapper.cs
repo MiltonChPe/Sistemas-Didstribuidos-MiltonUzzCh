@@ -32,4 +32,43 @@ public static class PokemonMapper
             Attack = pokemon.Stats.Attack
         };
     }
+
+    public static Pokemon ToModel(this CreatePokemonRequest createPokemonRequest)
+    {
+        return new Pokemon
+        {
+            Name = createPokemonRequest.Name,
+            Type = createPokemonRequest.Type,
+            Level = createPokemonRequest.Level,
+
+            Stats = new Stats
+            {
+                Attack = createPokemonRequest.Stats.Attack,
+                Defense = createPokemonRequest.Stats.Defense,
+                Speed = createPokemonRequest.Stats.Speed
+            }
+        };
+    }
+
+    public static IList<Pokemon> ToModel(this IList<PokemonResponseDto> pokemonRepsonseDtos)
+    {
+
+        return pokemonRepsonseDtos.Select(s => s.ToModel()).ToList();
+    }
+
+    public static CreatePokemonDto ToRequest(this Pokemon pokemon)
+    { 
+        return new CreatePokemonDto
+        {
+            Name = pokemon.Name,
+            Type = pokemon.Type,
+            Level = pokemon.Level,
+            Stats = new StatsDto
+            {
+                Attack = pokemon.Stats.Attack,
+                Defense = pokemon.Stats.Defense,
+                Speed = pokemon.Stats.Speed
+            }
+        };
+    }
 }

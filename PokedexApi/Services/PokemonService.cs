@@ -2,7 +2,8 @@ namespace PokedexApi.Services;
 
 using PokedexApi.Models;
 using PokedexApi.Gateways;
-
+using PokedexApi.Mappers;
+using PokedexApi.Exceptions;
 public class PokemonService : IPokemonService
 {
     private readonly IPokemonGateway _pokemonGateway;
@@ -13,6 +14,30 @@ public class PokemonService : IPokemonService
     public async Task<Pokemon> GetPokemonByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _pokemonGateway.GetPokemonByIdAsync(id, cancellationToken);
+    }
+
+    public async Task<Pokemon> CreatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken)
+    {
+        //validar que no exista otro pokemon con el mismo nombre
+        //con peticion al pokemonApi que esta en SOAP 
+        //usar endpoint GetPokemonsByName
+        var pokemons = await _pokemonGateway.GetPokemonsByNameAsync(pokemon.Name, cancellationToken);
+
+        if (PokemonExists(pokemons, pokemon.Name))
+        {
+            throw new PokemonAlreadyExistsException(pokemon.Name);
+        }
+        //COMO QUITO PARA SOLO QUEDARME CON LA VALIDACION DEL OTRO LADO
+
+
+
+        return await _pokemonGateway.CreatePokemonAsync(pokemon, cancellationToken);
+
+    }
+
+    public static bool PokemonExists(IList<Pokemon> pokemons, string pokemonNameToSearch)
+    {
+        return pokemons.Any(p => p.Name.ToLower().Equals(pokemonNameToSearch.ToLower()));
     }
 }
 
