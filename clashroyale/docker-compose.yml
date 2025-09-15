@@ -1,0 +1,49 @@
+services:
+  clash-royale-db:
+    image: mariadb:10.11
+    container_name: clash-royale-database
+    environment:
+      MYSQL_ROOT_PASSWORD: ClashContra
+      MYSQL_DATABASE: clashroyaledb
+      MYSQL_USER: clashuser
+      MYSQL_PASSWORD: ClashContra
+    ports:
+      - "3312:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - clash-royale-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  clash-royale-api:
+    build: .
+    container_name: clash-royale-api
+    ports:
+      - "8089:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://clash-royale-db:3306/clashroyaledb?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: clashuser
+      SPRING_DATASOURCE_PASSWORD: ClashContra
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.mariadb.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MariaDBDialect
+      SPRING_FLYWAY_ENABLED: true
+    depends_on:
+      clash-royale-db:
+        condition: service_healthy
+    networks:
+      - clash-royale-network
+    restart: unless-stopped
+
+volumes:
+  mariadb_data:
+
+networks:
+  clash-royale-network:
+    driver: bridge

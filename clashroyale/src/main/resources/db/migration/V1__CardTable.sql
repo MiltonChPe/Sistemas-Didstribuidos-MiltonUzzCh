@@ -1,0 +1,7 @@
+CREATE TABLE cards (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    rarity VARCHAR(50) NOT NULL,
+    elixir_cost INT NOT NULL
+);

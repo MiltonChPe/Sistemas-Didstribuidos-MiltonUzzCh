@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.miltonclashapi.com/api/cards"
+           xmlns:tns="http://www.miltonclashapi.com/api/cards"
+           elementFormDefault="qualified">
+
+
+    <xs:complexType name="cardDetails">
+        <xs:sequence>
+            <xs:element name="id" type="xs:long"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="type" type="xs:string"/>
+            <xs:element name="rarity" type="xs:string"/>
+            <xs:element name="elixirCost" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="getCardByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="createCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="rarity" type="xs:string"/>
+                <xs:element name="elixirCost" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getCardByIdResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:cardDetails"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:cardDetails"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
