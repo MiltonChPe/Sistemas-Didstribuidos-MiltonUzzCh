@@ -30,7 +30,8 @@ Para crear esta API soap utilizando java comencé creando el framework con la in
 
 ***Antes de correrla se debe tener lo siguiente:*** 
 
-**-**Java 17
+**-**
+-Java 17 instalado ya que es la version con la que corre la API
 
 -Docker o podman funcionando para los contenedores
 
@@ -40,13 +41,17 @@ Para crear esta API soap utilizando java comencé creando el framework con la in
 
 
 
-1-Copiar/descargar o copiar el repo con todos los archivos de la API
+1-Copiar el repo para poder correr la api utilizando la consola de comandos de su eleccion ingresar con "cd" a la ruta donde quiera clonar el repositorio
 
-2-Copiar la ruta de acceso donde se haya guardado la carpeta principal de la API
+2-Una vez dentro de esa ruta, con el siguiente comando podra clonar el repositorio: git clone https://github.com/MiltonChPe/Sistemas-Didstribuidos-MiltonUzzCh.git
 
-3-Usar cualquier consola de comandos de eleccion y utilizando el comando cd y la ruta entre comillas
+3-Una vez descargado para acceder a los archivos del repo debera usar el comando: cd Sistemas-Didstribuidos-MiltonUzzCh
 
-4-Despues como primer paso levantar la base de datos ocupando: docker-compose up clash-royale-db -d 
+    3.1-Como el proyecto sigue en Pull Request es necesario acceder a la rama para poder correrlo, por lo tanto debera utilizar el comando:  git checkout feature/ClashroyaleApi
+
+    3.2-Una vez que diga "switched to a new branch" y el nombre de la rama, para acceder al archivo y correr la API debera usar el comando cd clashroyale
+
+4-Una vez dentro del archivo ya podra comensar a probar la API, como primer paso levantar la base de datos se ocupara el comando: docker-compose up clash-royale-db -d 
 
 Nota: si ocupa podman solo cambiar Docker por podman en todos los comandos pertinentes 
 
