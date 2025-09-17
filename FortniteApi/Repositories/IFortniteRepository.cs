@@ -12,5 +12,5 @@ public interface IFortniteRepository
 
     Task UpdateCosmeticAsync(Cosmetic cosmetic, CancellationToken cancellationToken);
     
-    Task<IReadOnlyList<Cosmetic>> GetCOsmeticsByRarityAsync(string rarity, CancellationToken cancellationToken);
+    Task<IReadOnlyList<Cosmetic>> GetCosmeticsByRarityAsync(string rarity, CancellationToken cancellationToken);
 }

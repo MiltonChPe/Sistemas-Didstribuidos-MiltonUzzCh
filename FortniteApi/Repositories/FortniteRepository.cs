@@ -14,9 +14,9 @@ public class FortniteRepository : IFortniteRepository
         _context = context;
     }
 
-    public async Task<IReadOnlyList<Cosmetic>> GetCOsmeticsByRarityAsync(string rarity, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Cosmetic>> GetCosmeticsByRarityAsync(string rarity, CancellationToken cancellationToken)
     {
-        var cosmetics = await _context.Cosmetics.AsNoTracking().Where(s => s.Rarity.Contains(rarity)).ToListAsync(cancellationToken);
+        var cosmetics = await _context.Cosmetics.AsNoTracking().Where(s => s.Rarity == rarity).ToListAsync(cancellationToken);
         return cosmetics.ToModel();
     }
     public async Task UpdateCosmeticAsync(Cosmetic cosmetic, CancellationToken cancellationToken)

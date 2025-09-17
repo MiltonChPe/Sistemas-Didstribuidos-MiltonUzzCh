@@ -21,7 +21,7 @@ public class FortniteService : IFortniteService
 
     public async Task<IList<CosmeticResponseDto>> GetCosmeticByRarity(string rarity, CancellationToken cancellationToken)
     {
-        var cosmetics = await _fortniteRepository.GetCOsmeticsByRarityAsync(rarity, cancellationToken);
+        var cosmetics = await _fortniteRepository.GetCosmeticsByRarityAsync(rarity, cancellationToken);
         return cosmetics.ToResponseDto();
     }
     public async Task<CosmeticResponseDto> UpdateCosmetic(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)
@@ -31,7 +31,7 @@ public class FortniteService : IFortniteService
         {
             throw new FaultException("Cosmetic Not Found");
         }
-        if (!await Allowtoupdate(cosmeticupdate, cancellationToken))
+        if (!await AllowToUpdate(cosmeticupdate, cancellationToken))
         {
             throw new FaultException("Cosmetic with the same Name Already Exist");
         }
@@ -86,7 +86,7 @@ public class FortniteService : IFortniteService
         return cosmetic != null;
     }
 
-    private async Task<bool> Allowtoupdate(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)
+    private async Task<bool> AllowToUpdate(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)
     {
         var cosmeticduplicated = await _fortniteRepository.GetByNameAsync(cosmeticupdate.Name, cancellationToken);
         return cosmeticduplicated == null || IsTheSameCosmetic(cosmeticduplicated, cosmeticupdate);
