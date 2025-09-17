@@ -18,6 +18,31 @@ public class FortniteService : IFortniteService
         _fortniteRepository = fortniteRepository;
     }
 
+
+    public async Task<IList<CosmeticResponseDto>> GetCosmeticByRarity(string rarity, CancellationToken cancellationToken)
+    {
+        var cosmetics = await _fortniteRepository.GetCosmeticsByRarityAsync(rarity, cancellationToken);
+        return cosmetics.ToResponseDto();
+    }
+    public async Task<CosmeticResponseDto> UpdateCosmetic(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)
+    {
+        var cosmetic = await _fortniteRepository.GetCosmeticByIdAsync(cosmeticupdate.Id, cancellationToken);
+        if (!CosmeticExist(cosmetic))
+        {
+            throw new FaultException("Cosmetic Not Found");
+        }
+        if (!await AllowToUpdate(cosmeticupdate, cancellationToken))
+        {
+            throw new FaultException("Cosmetic with the same Name Already Exist");
+        }
+
+        cosmetic.Name = cosmeticupdate.Name;
+        cosmetic.Type = cosmeticupdate.Type;
+        cosmetic.Rarity = cosmeticupdate.Rarity;
+
+        await _fortniteRepository.UpdateCosmeticAsync(cosmetic, cancellationToken);
+        return cosmetic.ToResponseDto();
+    }
     public async Task<DeleteCosmeticResponseDto> DeleteCosmetic(Guid id, CancellationToken cancellationToken)
     {
         var cosmetic = await _fortniteRepository.GetCosmeticByIdAsync(id, cancellationToken);
@@ -56,7 +81,19 @@ public class FortniteService : IFortniteService
         return cosmetic != null;
     }
 
-    private static bool CosmeticExist(Cosmetic cosmetic) {
-        return cosmetic != null; 
+    private static bool CosmeticExist(Cosmetic cosmetic)
+    {
+        return cosmetic != null;
+    }
+
+    private async Task<bool> AllowToUpdate(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)
+    {
+        var cosmeticduplicated = await _fortniteRepository.GetByNameAsync(cosmeticupdate.Name, cancellationToken);
+        return cosmeticduplicated == null || IsTheSameCosmetic(cosmeticduplicated, cosmeticupdate);
+    }
+    
+    private static bool IsTheSameCosmetic(Cosmetic cosmetic, UpdateCosmeticDto cosmeticupdate)
+    {
+        return cosmetic.Id == cosmeticupdate.Id;
     }
 }
