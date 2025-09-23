@@ -17,6 +17,7 @@ public class PokemonGateway : IPokemonGateway
         _logger = logger;
     }
 
+
     public async Task<Pokemon> GetPokemonByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         try
