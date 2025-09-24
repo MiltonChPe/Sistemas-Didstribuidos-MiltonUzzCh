@@ -33,6 +33,43 @@ public class PokemonsController : ControllerBase
         return pokemon is null ? NotFound() : Ok(pokemon.ToResponse());
     }
 
+    //localhost:PORT/api/v1/pokemons?name=nombre
+    //HTTP status - Get 
+    //200 - OK (si encuentra pokemons o no)
+    [HttpGet] //aqui no le paso nada porque el id lo paso por query
+    public async Task<ActionResult<IList<PokemonResponse>>> GetPokemonsAsync([FromQuery] string name, [FromQuery] string type, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(type))
+        {
+            return BadRequest(new { Message = "Type query parameter is required" });
+        }
+
+        var pokemons = await _pokemonService.GetPokemonsAsync(name, type, cancellationToken);
+        return Ok(pokemons.ToResponse());
+    }
+
+    //localhost:PORT/api/v1/pokemons/{id}
+    // HTTP Verb - Delete
+    // HTTP Status 
+    // 204 - No Content (si se borro correctamente)
+    // 200 Ok (si se borro correctamente)- no sigue las reglas de REST pero es valido
+    // 404 - Not Found (si el pokemon no existe)
+    // 500 - Internal Server Error
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePokemonAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _pokemonService.DeletePokemonAsync(id, cancellationToken);
+            return NoContent(); //204
+        }
+        catch (PokemonNotFoundException)
+        {
+            return NotFound(); //404
+        }
+    }
+
+
     //localhost:PORT/api/v1/pokemons
     //debe recibir un body request - JSON {}
     //Http verb - post
@@ -61,13 +98,14 @@ public class PokemonsController : ControllerBase
 
         catch (PokemonAlreadyExistsException ex)
         {
-           return Conflict(new { Message = ex.Message });
+            return Conflict(new { Message = ex.Message });
         }
     }
-    
+
     private static bool InvalidAttack(CreatePokemonRequest createPokemon)
     {
         return createPokemon.Stats.Attack > 0;
     }
+    
 }
 

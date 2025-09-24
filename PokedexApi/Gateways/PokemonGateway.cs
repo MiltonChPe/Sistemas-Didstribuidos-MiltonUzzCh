@@ -2,6 +2,7 @@ using System.ServiceModel;
 using PokedexApi.Models;
 using PokedexApi.Infrastructure.Soap.Contracts;
 using PokedexApi.Mappers;
+using PokedexApi.Exceptions;
 
 namespace PokedexApi.Gateways;
 
@@ -30,6 +31,27 @@ public class PokemonGateway : IPokemonGateway
             return null;
         }
     }
+    
+    public async Task DeletePokemonAsync(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _pokemonContract.DeletePokemon(id, cancellationToken);
+        }
+        catch (FaultException ex) when (ex.Message == "Pokemon not fuound")
+        {
+            _logger.LogWarning(ex, "Pokemon not fuound");
+            throw new PokemonNotFoundException(id);
+        }
+    }
+/*
+            public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
+            {
+                var pokemons = await _pokemonContract.GetPokemonsByName(name, cancellationToken);
+                var pokemonsModel = pokemons.ToModel();
+                var pokemonesfiltrados = pokemonsModel.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
+                return pokemonesfiltrados;
+            }*/
 
     public async Task<IList<Pokemon>> GetPokemonsByNameAsync(string name, CancellationToken cancellationToken)
     {
