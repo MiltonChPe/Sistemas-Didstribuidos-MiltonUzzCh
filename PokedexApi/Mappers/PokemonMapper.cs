@@ -29,8 +29,15 @@ public static class PokemonMapper
         {
             Id = pokemon.Id,
             Name = pokemon.Name,
+            Type = pokemon.Type,
             Attack = pokemon.Stats.Attack
+  
         };
+    }
+
+    public static IList<PokemonResponse> ToResponse(this IList<Pokemon> pokemons)
+    {
+        return pokemons.Select(s => s.ToResponse()).ToList();
     }
 
     public static Pokemon ToModel(this CreatePokemonRequest createPokemonRequest)
