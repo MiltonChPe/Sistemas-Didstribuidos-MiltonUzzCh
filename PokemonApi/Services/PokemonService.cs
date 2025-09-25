@@ -24,7 +24,10 @@ public class PokemonService : IPokemonService
         return pokemon.ToResponseDto();
 
     }
-
+    public async Task<PagedPokemonResponseDto> GetPokemons(QueryParameters queryParameters, CancellationToken cancellationToken)
+    {
+        return await _pokemonRepository.GetPokemonsAsync(queryParameters, cancellationToken);
+    }
     public async Task<PokemonResponseDto> UpdatePokemon(UpdatePokemonDto pokemonToUpdate, CancellationToken cancellationToken)
     {
         var pokemon = await _pokemonRepository.GetPokemonByIdAsync(pokemonToUpdate.Id, cancellationToken);

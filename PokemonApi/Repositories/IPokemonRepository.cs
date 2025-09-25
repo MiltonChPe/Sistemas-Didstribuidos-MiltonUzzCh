@@ -16,4 +16,6 @@ public interface IPokemonRepository
     Task DeletePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
 
     Task UpdatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
+
+    Task<PagedPokemonResponseDto> GetPokemonsAsync(QueryParameters queryParameters, CancellationToken cancellationToken);
 }

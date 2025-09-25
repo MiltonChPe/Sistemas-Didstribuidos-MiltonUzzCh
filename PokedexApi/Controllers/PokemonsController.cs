@@ -37,15 +37,17 @@ public class PokemonsController : ControllerBase
     //HTTP status - Get 
     //200 - OK (si encuentra pokemons o no)
     [HttpGet] //aqui no le paso nada porque el id lo paso por query
-    public async Task<ActionResult<IList<PokemonResponse>>> GetPokemonsAsync([FromQuery] string name, [FromQuery] string type, CancellationToken cancellationToken)
+
+    public async Task<ActionResult<PagedPokemonResponse>> GetPokemonsAsync([FromQuery] string name, [FromQuery] string type, [FromQuery] int pageSize, [FromQuery] int pageNumber, [FromQuery] string orderBy, [FromQuery] string orderDirection, CancellationToken cancellationToken = default)
     {
+        
         if (string.IsNullOrEmpty(type))
         {
             return BadRequest(new { Message = "Type query parameter is required" });
         }
 
-        var pokemons = await _pokemonService.GetPokemonsAsync(name, type, cancellationToken);
-        return Ok(pokemons.ToResponse());
+        var paginated = await _pokemonService.GetPokemonsAsync(name, type, pageSize, pageNumber, orderBy, orderDirection, cancellationToken);
+        return Ok(paginated.ToPagedResponse());
     }
 
     //localhost:PORT/api/v1/pokemons/{id}

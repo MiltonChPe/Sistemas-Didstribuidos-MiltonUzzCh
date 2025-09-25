@@ -20,4 +20,9 @@ public interface IPokemonContract
 
     [OperationContract]
     Task<PokemonResponseDto> UpdatePokemon(UpdatePokemonDto pokemon, CancellationToken cancellationToken);
+
+   
+    [OperationContract]
+    Task<PagedPokemonResponseDto> GetPokemons(QueryParameters queryParameters, CancellationToken cancellationToken);
+
 }
