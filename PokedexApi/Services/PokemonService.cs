@@ -15,20 +15,10 @@ public class PokemonService : IPokemonService
     {
         return await _pokemonGateway.GetPokemonByIdAsync(id, cancellationToken);
     }
-    /*
-        public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
-        {
-            var pokemons = await _pokemonGateway.GetPokemonsByNameAsync(name, cancellationToken);
-
-            var pokemonesfiltrados = pokemons.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
-
-            return pokemonesfiltrados;
-        }*/
-    public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
+  
+  public async Task<PagedResult<Pokemon>> GetPokemonsAsync(string name, string type, int pageSize, int pageNumber, string orderBy, string orderDirection, CancellationToken cancellationToken)
     {
-        var pokemons = await _pokemonGateway.GetPokemonsByNameAsync(name, cancellationToken);
-
-        return pokemons.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
+        return await _pokemonGateway.GetPokemonsAsync(name, type, pageSize, pageNumber, orderBy, orderDirection, cancellationToken);
     }
 
     public async Task DeletePokemonAsync(Guid id, CancellationToken cancellationToken)
@@ -36,6 +26,7 @@ public class PokemonService : IPokemonService
         await _pokemonGateway.DeletePokemonAsync(id, cancellationToken);
         
     }
+
     public async Task<Pokemon> CreatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken)
     {
         //validar que no exista otro pokemon con el mismo nombre
