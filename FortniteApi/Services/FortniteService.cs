@@ -18,10 +18,19 @@ public class FortniteService : IFortniteService
         _fortniteRepository = fortniteRepository;
     }
 
-
+    public async Task<PagedCosmeticResponseDto> GetCosmetics(QueryParameters queryParameters, CancellationToken cancellationToken)
+    {
+        return await _fortniteRepository.GetCosmeticsAsync(queryParameters, cancellationToken);
+    }
     public async Task<IList<CosmeticResponseDto>> GetCosmeticByRarity(string rarity, CancellationToken cancellationToken)
     {
         var cosmetics = await _fortniteRepository.GetCosmeticsByRarityAsync(rarity, cancellationToken);
+        return cosmetics.ToResponseDto();
+    }
+
+    public async Task<IList<CosmeticResponseDto>> GetCosmeticsByName(string name, CancellationToken cancellationToken)
+    {
+        var cosmetics = await _fortniteRepository.GetCosmeticsByNameAsync(name, cancellationToken);
         return cosmetics.ToResponseDto();
     }
     public async Task<CosmeticResponseDto> UpdateCosmetic(UpdateCosmeticDto cosmeticupdate, CancellationToken cancellationToken)

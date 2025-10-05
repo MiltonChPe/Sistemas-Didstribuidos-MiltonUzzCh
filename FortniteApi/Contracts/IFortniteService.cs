@@ -14,6 +14,9 @@ public interface IFortniteService
     Task<DeleteCosmeticResponseDto> DeleteCosmetic(Guid id, CancellationToken cancellationToken);
 
     [OperationContract]
+    Task <IList<CosmeticResponseDto>> GetCosmeticsByName(string name, CancellationToken cancellationToken);
+
+    [OperationContract]
     Task<CosmeticResponseDto> GetCosmeticById(Guid id, CancellationToken cancellationToken);
 
     [OperationContract]
@@ -21,4 +24,7 @@ public interface IFortniteService
 
     [OperationContract]
     Task<IList<CosmeticResponseDto>> GetCosmeticByRarity(string rarity, CancellationToken cancellationToken);
+
+    [OperationContract]
+    Task<PagedCosmeticResponseDto> GetCosmetics(QueryParameters queryParameters, CancellationToken cancellationToken);
 }
