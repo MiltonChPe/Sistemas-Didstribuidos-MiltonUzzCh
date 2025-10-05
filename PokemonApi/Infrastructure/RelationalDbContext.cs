@@ -9,6 +9,7 @@ public class RelationalDbContext : DbContext
     public DbSet<PokemonEntity> Pokemons { get; set; }
     public RelationalDbContext(DbContextOptions<RelationalDbContext> db) : base(db)
     {
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
     }
 
