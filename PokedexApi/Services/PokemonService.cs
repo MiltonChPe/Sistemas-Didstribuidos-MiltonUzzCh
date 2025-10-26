@@ -11,24 +11,38 @@ public class PokemonService : IPokemonService
     {
         _pokemonGateway = pokemonGateway;
     }
+
+    public async Task<Pokemon> PatchPokemonAsync(Guid id, string? name, string? type, int? attack, int? defense, int? speed, CancellationToken cancellationToken)
+    {
+        var pokemon = await _pokemonGateway.GetPokemonByIdAsync(id, cancellationToken);
+        if (pokemon is null)
+        {
+            throw new PokemonNotFoundException(id);
+        }
+
+        pokemon.Name = name ?? pokemon.Name;
+        pokemon.Type = type ?? pokemon.Type;
+        pokemon.Stats.Attack = attack ?? pokemon.Stats.Attack;
+        pokemon.Stats.Defense = defense ?? pokemon.Stats.Defense;
+        pokemon.Stats.Speed = speed ?? pokemon.Stats.Speed;
+        await _pokemonGateway.UpdatePokemonAsync(pokemon, cancellationToken);
+        return pokemon;
+
+    }
+    public async Task UpdatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken)
+    {
+
+        await _pokemonGateway.UpdatePokemonAsync(pokemon, cancellationToken);
+    }
+
     public async Task<Pokemon> GetPokemonByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _pokemonGateway.GetPokemonByIdAsync(id, cancellationToken);
     }
-    /*
-        public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
-        {
-            var pokemons = await _pokemonGateway.GetPokemonsByNameAsync(name, cancellationToken);
-
-            var pokemonesfiltrados = pokemons.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
-
-            return pokemonesfiltrados;
-        }*/
-    public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
+  
+  public async Task<PagedResult<Pokemon>> GetPokemonsAsync(string name, string type, int pageSize, int pageNumber, string orderBy, string orderDirection, CancellationToken cancellationToken)
     {
-        var pokemons = await _pokemonGateway.GetPokemonsByNameAsync(name, cancellationToken);
-
-        return pokemons.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
+        return await _pokemonGateway.GetPokemonsAsync(name, type, pageSize, pageNumber, orderBy, orderDirection, cancellationToken);
     }
 
     public async Task DeletePokemonAsync(Guid id, CancellationToken cancellationToken)
@@ -36,6 +50,7 @@ public class PokemonService : IPokemonService
         await _pokemonGateway.DeletePokemonAsync(id, cancellationToken);
         
     }
+
     public async Task<Pokemon> CreatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken)
     {
         //validar que no exista otro pokemon con el mismo nombre

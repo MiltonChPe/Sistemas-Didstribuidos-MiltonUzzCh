@@ -6,6 +6,22 @@ namespace PokedexApi.Mappers;
 
 public static class PokemonMapper
 {
+
+    public static Pokemon ToModel(this UpdatePokemonRequest pokemon, Guid id)
+    {
+        return new Pokemon
+        {
+            Id = id,
+            Name = pokemon.Name,
+            Type = pokemon.Type,
+            Stats = new Stats
+            {
+                Attack = pokemon.Stats.Attack,
+                Defense = pokemon.Stats.Defense,
+                Speed = pokemon.Stats.Speed
+            }
+        };
+    }
     public static Pokemon ToModel(this PokemonResponseDto pokemonRepsonseDto)
     {
         return new Pokemon
@@ -22,7 +38,39 @@ public static class PokemonMapper
             }
         };
     }
+    public static PagedPokemonResponse ToPagedResponse(this PagedResult<Pokemon> pagedResult)
+    {
+        return new PagedPokemonResponse
+        {
+            PageNumber = pagedResult.PageNumber,
+            PageSize = pagedResult.PageSize,
+            TotalRecords = pagedResult.TotalRecords,
+            TotalPages = pagedResult.TotalPages,
+            Data = pagedResult.Data.ToResponse()
+        };
+    }
 
+    public static PagedResult<Pokemon> ToPagedResult(this PagedPokemonResponseDto pagedDto)
+    {
+        if (pagedDto == null)
+        {
+            return new PagedResult<Pokemon>
+            {
+                TotalRecords = 0,
+                PageNumber = 1,
+                PageSize = 0,
+                Data = new List<Pokemon>()
+            };
+        }
+        return new PagedResult<Pokemon>
+        {
+            PageNumber = pagedDto.PageNumber,
+            PageSize = pagedDto.PageSize,
+            TotalRecords = pagedDto.TotalRecords,
+            Data = pagedDto.Data.ToModel(),
+
+        };
+    }
     public static PokemonResponse ToResponse(this Pokemon pokemon)
     {
         return new PokemonResponse
@@ -31,7 +79,7 @@ public static class PokemonMapper
             Name = pokemon.Name,
             Type = pokemon.Type,
             Attack = pokemon.Stats.Attack
-  
+
         };
     }
 
@@ -64,7 +112,7 @@ public static class PokemonMapper
     }
 
     public static CreatePokemonDto ToRequest(this Pokemon pokemon)
-    { 
+    {
         return new CreatePokemonDto
         {
             Name = pokemon.Name,
@@ -78,4 +126,22 @@ public static class PokemonMapper
             }
         };
     }
+
+    
+    public static UpdatePokemonDto ToUpdateRequest(this Pokemon pokemon)
+    {
+        return new UpdatePokemonDto
+        {   
+            Id = pokemon.Id,
+            Name = pokemon.Name,
+            Type = pokemon.Type,
+            Stats = new StatsDto
+            {
+                Attack = pokemon.Stats.Attack,
+                Defense = pokemon.Stats.Defense,
+                Speed = pokemon.Stats.Speed
+            }
+        };
+    }
+
 }

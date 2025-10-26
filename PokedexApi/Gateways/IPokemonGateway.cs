@@ -11,6 +11,8 @@ public interface IPokemonGateway
     Task<Pokemon> CreatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
 
     Task DeletePokemonAsync(Guid id, CancellationToken cancellationToken);
-    
-   /* Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken); */
+
+    Task<PagedResult<Pokemon>> GetPokemonsAsync(string name, string type, int pageSize, int pageNumber, string orderBy, string orderDirection, CancellationToken cancellationToken);
+   
+    Task UpdatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken);
 }

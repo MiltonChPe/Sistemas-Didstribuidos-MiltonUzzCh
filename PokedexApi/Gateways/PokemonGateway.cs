@@ -3,6 +3,7 @@ using PokedexApi.Models;
 using PokedexApi.Infrastructure.Soap.Contracts;
 using PokedexApi.Mappers;
 using PokedexApi.Exceptions;
+using System.Diagnostics.Contracts;
 
 namespace PokedexApi.Gateways;
 
@@ -31,6 +32,22 @@ public class PokemonGateway : IPokemonGateway
             return null;
         }
     }
+
+    public async Task UpdatePokemonAsync(Pokemon pokemon, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _pokemonContract.UpdatePokemon(pokemon.ToUpdateRequest(), cancellationToken);
+        }
+        catch (FaultException ex) when (ex.Message == "Pokemon Not found")
+        {
+            throw new PokemonNotFoundException(pokemon.Id);
+        }
+        catch (FaultException ex) when (ex.Message == "Pokemon with this name alrwady exist")
+        {
+            throw new PokemonAlreadyExistsException(pokemon.Name);
+        }
+    }
     
     public async Task DeletePokemonAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -44,14 +61,24 @@ public class PokemonGateway : IPokemonGateway
             throw new PokemonNotFoundException(id);
         }
     }
-/*
-            public async Task<IList<Pokemon>> GetPokemonsAsync(string name, string type, CancellationToken cancellationToken)
-            {
-                var pokemons = await _pokemonContract.GetPokemonsByName(name, cancellationToken);
-                var pokemonsModel = pokemons.ToModel();
-                var pokemonesfiltrados = pokemonsModel.Where(p => p.Type.ToLower().Contains(type.ToLower())).ToList();
-                return pokemonesfiltrados;
-            }*/
+
+      public async Task<PagedResult<Pokemon>> GetPokemonsAsync(string name, string type, int pageSize, int pageNumber, string orderBy, string orderDirection, CancellationToken cancellationToken)
+    {
+    
+        var queryParameters = new Infrastructure.Soap.Dtos.QueryParameters
+        {
+            Name = name,
+            Type = type,
+            PageSize = pageSize,
+            PageNumber = pageNumber,
+            OrderBy = orderBy,
+            OrderDirection = orderDirection
+        };
+
+        var paginated = await _pokemonContract.GetPokemons(queryParameters, cancellationToken);
+
+        return paginated.ToPagedResult();
+    }
 
     public async Task<IList<Pokemon>> GetPokemonsByNameAsync(string name, CancellationToken cancellationToken)
     {
