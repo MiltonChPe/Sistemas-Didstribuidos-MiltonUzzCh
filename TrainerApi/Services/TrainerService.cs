@@ -43,7 +43,6 @@ public class TrainerService : TrainerApi.TrainerService.TrainerServiceBase
     {
         var createdTrainers = new List<TrainerResponse>();
 
-
         while (await requestStream.MoveNext(context.CancellationToken))
         {
             var request = requestStream.Current;

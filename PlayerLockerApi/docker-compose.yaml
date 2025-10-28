@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  playerlockerapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8099:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDB__ConnectionString=mongodb://admin:password@mongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - locker-network
+
+  
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - locker-network
+
+networks:
+  locker-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
