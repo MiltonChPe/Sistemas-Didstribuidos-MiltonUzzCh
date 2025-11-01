@@ -31,6 +31,22 @@ public class TrainerRepository : ITrainerRepository
         return trainerToCreate.ToDomain();
     }
 
+    public async Task UpdateAsync(Trainer trainer, CancellationToken cancellationToken)
+    {
+        var update = Builders<TrainerDocument>.Update
+            .Set(t => t.Name, trainer.Name)
+            .Set(t => t.Age, trainer.Age)
+            .Set(t => t.Birthdate, trainer.Birthdate)
+            .Set(t => t.Medals, trainer.Medals.Select(m => m.ToDocument()).ToList());
+
+        await _trainerCollection.UpdateOneAsync(t => t.Id == trainer.Id, update, cancellationToken: cancellationToken);
+    }
+
+    public async Task DeleteAsync(string id, CancellationToken cancellationToken)
+    {
+        await _trainerCollection.DeleteOneAsync(t => t.Id == id, cancellationToken);
+    }
+
     public async Task<IEnumerable<Trainer>> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
         var trainers = await _trainerCollection.Find(filter: t => t.Name.Contains(name)).ToListAsync(cancellationToken);

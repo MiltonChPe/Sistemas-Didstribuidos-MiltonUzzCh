@@ -13,6 +13,7 @@ services:
     environment:
       - Authentication__Authority=http://hydra-public:4444/
       - Authentication__Issuer=http://hydra-public:4444/
+      - TrainerApiEndpoint=http://host.docker.internal:8098
   postgres:
     image: postgres:15
     environment:

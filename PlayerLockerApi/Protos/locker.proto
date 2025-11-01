@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package lockerpb;
+
+option csharp_namespace = "PlayerLockerApi";
+
+
+service LockerService{
+  rpc CreateLockers (stream CreateLockerRequest) returns (CreateLockerResponse);
+}
+
+message Locker{
+  string id = 1;
+  string name = 2;
+  string skin = 3;
+  string backblings = 4;
+  string pickaxe = 5;
+  string glider = 6;
+  string contrail = 7;
+  string emote = 8;
+}
+message CreateLockerRequest{
+  string name = 1;
+  string skin = 2;
+  string backblings = 3;
+  string pickaxe = 4;
+  string glider = 5;
+  string contrail = 6;
+  string emote = 7;
+}
+
+message CreateLockerResponse{
+  repeated Locker lockers = 1;
+}
