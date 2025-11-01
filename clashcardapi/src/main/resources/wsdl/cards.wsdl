@@ -1,0 +1,94 @@
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://www.miltonclashapi.com/api/cards" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.miltonclashapi.com/api/cards" targetNamespace="http://www.miltonclashapi.com/api/cards">
+<wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.miltonclashapi.com/api/cards">
+<xs:complexType name="cardDetails">
+<xs:sequence>
+<xs:element name="id" type="xs:long"/>
+<xs:element name="name" type="xs:string"/>
+<xs:element name="type" type="xs:string"/>
+<xs:element name="rarity" type="xs:string"/>
+<xs:element name="elixirCost" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="getCardByIdRequest">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="id" type="xs:long"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="createCardRequest">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="name" type="xs:string"/>
+<xs:element name="type" type="xs:string"/>
+<xs:element name="rarity" type="xs:string"/>
+<xs:element name="elixirCost" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="getCardByIdResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="card" type="tns:cardDetails"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="createCardResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="card" type="tns:cardDetails"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>
+</wsdl:types>
+<wsdl:message name="getCardByIdRequest">
+<wsdl:part element="tns:getCardByIdRequest" name="getCardByIdRequest"> </wsdl:part>
+</wsdl:message>
+<wsdl:message name="getCardByIdResponse">
+<wsdl:part element="tns:getCardByIdResponse" name="getCardByIdResponse"> </wsdl:part>
+</wsdl:message>
+<wsdl:message name="createCardResponse">
+<wsdl:part element="tns:createCardResponse" name="createCardResponse"> </wsdl:part>
+</wsdl:message>
+<wsdl:message name="createCardRequest">
+<wsdl:part element="tns:createCardRequest" name="createCardRequest"> </wsdl:part>
+</wsdl:message>
+<wsdl:portType name="CardsPort">
+<wsdl:operation name="getCardById">
+<wsdl:input message="tns:getCardByIdRequest" name="getCardByIdRequest"> </wsdl:input>
+<wsdl:output message="tns:getCardByIdResponse" name="getCardByIdResponse"> </wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="createCard">
+<wsdl:input message="tns:createCardRequest" name="createCardRequest"> </wsdl:input>
+<wsdl:output message="tns:createCardResponse" name="createCardResponse"> </wsdl:output>
+</wsdl:operation>
+</wsdl:portType>
+<wsdl:binding name="CardsPortSoap11" type="tns:CardsPort">
+<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+<wsdl:operation name="getCardById">
+<soap:operation soapAction=""/>
+<wsdl:input name="getCardByIdRequest">
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output name="getCardByIdResponse">
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+<wsdl:operation name="createCard">
+<soap:operation soapAction=""/>
+<wsdl:input name="createCardRequest">
+<soap:body use="literal"/>
+</wsdl:input>
+<wsdl:output name="createCardResponse">
+<soap:body use="literal"/>
+</wsdl:output>
+</wsdl:operation>
+</wsdl:binding>
+<wsdl:service name="CardsPortService">
+<wsdl:port binding="tns:CardsPortSoap11" name="CardsPortSoap11">
+<soap:address location="http://localhost:8089/ws"/>
+</wsdl:port>
+</wsdl:service>
+</wsdl:definitions>

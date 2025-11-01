@@ -9,7 +9,12 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.miltonclashapi.clashroyale.Validators.CardValidator;
 import com.miltonclashapi.clashroyale.dtos.CardResponseDto;
 import com.miltonclashapi.clashroyale.dtos.CreateCardDto;
+import com.miltonclashapi.clashroyale.dtos.DeleteCardRequest;
+import com.miltonclashapi.clashroyale.dtos.DeleteCardResponse;
+import com.miltonclashapi.clashroyale.dtos.GetAllCardsRequest;
+import com.miltonclashapi.clashroyale.dtos.GetAllCardsResponse; 
 import com.miltonclashapi.clashroyale.dtos.GetCardByIdRequest;
+import com.miltonclashapi.clashroyale.dtos.UpdateCardDto;
 import com.miltonclashapi.clashroyale.services.CardService;
 
 @Endpoint
@@ -42,5 +47,26 @@ public class CardEndpoint {
         return cardService.CreateCard(validatedRequest);
     }
 
- 
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "deleteCardRequest")
+    @ResponsePayload
+    public DeleteCardResponse DeleteCard(@RequestPayload DeleteCardRequest request) {
+        Long validatedId = CardValidator.validateId(request.getId());
+        return cardService.DeleteCard(validatedId);
+    }
+    
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "updateCardRequest")
+    @ResponsePayload
+    public CardResponseDto UpdateCard(@RequestPayload UpdateCardDto request) {
+        UpdateCardDto cardToUpdate = CardValidator.validateUpdate(request);
+        return cardService.UpdateCard(cardToUpdate);
+    }   
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAllCardsRequest")
+    @ResponsePayload
+    public GetAllCardsResponse GetAllCards(@RequestPayload GetAllCardsRequest request) {
+        GetAllCardsRequest validatedRequest = CardValidator.PaginationValidate(request);
+        return cardService.GetAllCards(validatedRequest);
+    }
+
+
 }

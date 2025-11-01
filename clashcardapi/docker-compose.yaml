@@ -1,0 +1,143 @@
+version: '3.8'
+
+services:
+  clashcard-api:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: clashcard-api
+    ports:
+      - "8100:8080" 
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis-cache
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI=http://hydra-public:4444/.well-known/jwks.json
+      - SOAP_API_URL=http://clash-royale-api:8080/ws
+    depends_on:
+      - clash-royale-api
+      - redis-cache
+      - hydra-public
+      - hydra-admin
+    networks:
+      - clash-network
+
+  clash-royale-api:
+    build: "../clashroyale"
+    container_name: clash-royale-api
+    ports:
+      - "8089:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://clash-royale-db:3306/clashroyaledb?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=clashuser
+      - SPRING_DATASOURCE_PASSWORD=ClashContra
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_FLYWAY_ENABLED=true
+    depends_on:
+      clash-royale-db:
+        condition: service_healthy
+    networks:
+      - clash-network
+    restart: unless-stopped
+
+  clash-royale-db:
+    image: mariadb:10.11
+    container_name: clash-royale-database
+    environment:
+      - MYSQL_ROOT_PASSWORD=ClashContra
+      - MYSQL_DATABASE=clashroyaledb
+      - MYSQL_USER=clashuser
+      - MYSQL_PASSWORD=ClashContra
+    ports:
+      - "3312:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - clash-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379" 
+    volumes:
+      - redis_data:/data
+    networks:
+      - clash-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  postgres-db:
+    image: postgres:15
+    container_name: hydra-database
+    environment:
+      - POSTGRES_USER=hydra
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=hydra
+    ports:
+      - "5432:5432"
+    volumes:
+      - hydra_data:/var/lib/postgresql/data
+    networks:
+      - clash-network
+
+  hydra-migrate:
+    image: oryd/hydra:v2.2
+    environment:
+      - DSN=postgres://hydra:secret@postgres-db:5432/hydra?sslmode=disable
+    command: migrate sql -e --yes
+    depends_on:
+      - postgres-db
+    networks:
+      - clash-network
+
+  hydra-admin:
+    image: oryd/hydra:v2.2
+    environment:
+      - DSN=postgres://hydra:secret@postgres-db:5432/hydra?sslmode=disable
+      - URLS_SELF_ISSUER=http://hydra-public:4444
+      - SECRETS_SYSTEM=thisisaverysecretkey123
+      - LOG_LEVEL=debug
+      - STRATEGIES_ACCESS_TOKEN=jwt
+    command: serve admin --dev
+    ports:
+      - "4445:4445" 
+    depends_on:
+      - postgres-db
+      - hydra-migrate
+    networks:
+      - clash-network
+
+  hydra-public:
+    image: oryd/hydra:v2.2
+    environment:
+      - DSN=postgres://hydra:secret@postgres-db:5432/hydra?sslmode=disable
+      - URLS_SELF_ISSUER=http://hydra-public:4444
+      - SECRETS_SYSTEM=thisisaverysecretkey123
+      - OAUTH2_EXPOSE_INTERNAL_ERRORS=true
+      - LOG_LEVEL=debug
+      - STRATEGIES_ACCESS_TOKEN=jwt
+    command: serve public --dev
+    ports:
+      - "4444:4444" 
+    depends_on:
+      - postgres-db
+      - hydra-migrate
+    networks:
+      - clash-network
+
+volumes:
+  mariadb_data:
+  redis_data:
+  hydra_data:
+
+networks:
+  clash-network:
+    driver: bridge

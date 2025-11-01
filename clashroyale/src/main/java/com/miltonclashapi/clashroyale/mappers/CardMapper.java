@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.miltonclashapi.clashroyale.dtos.CardResponseDto;
 import com.miltonclashapi.clashroyale.dtos.CreateCardDto;
+import com.miltonclashapi.clashroyale.dtos.UpdateCardDto;
 import com.miltonclashapi.clashroyale.infrastructure.entities.CardEntity;
 import com.miltonclashapi.clashroyale.models.Card;
 
@@ -40,5 +41,16 @@ public class CardMapper {
             entity.getRarity(),
             entity.getElixirCost()
         );
+    }
+
+    public CardEntity updateEntity(CardEntity existingEntity, UpdateCardDto dto) {
+        if (dto == null || existingEntity == null) return existingEntity;
+        
+        existingEntity.setName(dto.getName());
+        existingEntity.setType(dto.getType());
+        existingEntity.setRarity(dto.getRarity());
+        existingEntity.setElixirCost(dto.getElixirCost());
+        
+        return existingEntity;
     }
 }
