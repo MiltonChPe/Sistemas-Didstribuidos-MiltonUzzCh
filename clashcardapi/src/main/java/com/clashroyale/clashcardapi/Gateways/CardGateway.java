@@ -60,6 +60,12 @@ public class CardGateway implements ICardGateway {
                 }
             }
             throw ex;
+        } catch (Exception ex) {
+            log.error("Error de conexión con el servicio SOAP en getCardById: {}", ex.getMessage());
+            throw new SoapServiceException(
+                "No se puede conectar al servicio SOAP. El servicio no está disponible.",
+                ex
+            );
         }
     }
 
@@ -101,6 +107,12 @@ public class CardGateway implements ICardGateway {
 
             throw new SoapServiceException(
                 "El servicio SOAP no está disponible o respondió con error: " + errorMessage,
+                ex
+            );
+        } catch (Exception ex) {
+            log.error("Error de conexión con el servicio SOAP en createCard: {}", ex.getMessage());
+            throw new SoapServiceException(
+                "No se puede conectar al servicio SOAP. El servicio no está disponible.",
                 ex
             );
         }
@@ -198,6 +210,12 @@ public class CardGateway implements ICardGateway {
             "El servicio SOAP no está disponible o respondió con error: " + errorMessage,
             ex
         );
+        } catch (Exception ex) {
+            log.error("Error de conexión con el servicio SOAP en updateCard: {}", ex.getMessage());
+            throw new SoapServiceException(
+                "No se puede conectar al servicio SOAP. El servicio no está disponible.",
+                ex
+            );
         }
     }
     
@@ -250,6 +268,12 @@ public class CardGateway implements ICardGateway {
         
         throw new SoapServiceException(
             "El servicio SOAP no está disponible o respondió con error: " + ex.getFaultStringOrReason(),
+            ex
+        );
+    } catch (Exception ex) {
+        log.error("Error de conexión con el servicio SOAP en getAllCards: {}", ex.getMessage());
+        throw new SoapServiceException(
+            "No se puede conectar al servicio SOAP. El servicio no está disponible.",
             ex
         );
     }

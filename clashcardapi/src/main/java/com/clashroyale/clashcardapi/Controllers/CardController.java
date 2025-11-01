@@ -40,7 +40,7 @@ public class CardController {
 
     @PreAuthorize("hasAuthority('read')")
     @GetMapping("/{id}")
-    public ResponseEntity<CardResponse> getCardById(@PathVariable long id) {
+    public ResponseEntity<?> getCardById(@PathVariable long id) {
         try {
             Card card = cardService.getCardById(id);
             CardResponse responseDto = cardMapper.toResponse(card);
@@ -48,8 +48,14 @@ public class CardController {
             return ResponseEntity.ok(responseDto);
 
         } catch (CardNotFoundException ex) {
-
             return ResponseEntity.notFound().build();
+            
+        } catch (SoapServiceException ex) {
+            Map<String, String> error = Map.of(
+                "error", "SOAP Service Error",
+                "message", ex.getMessage()
+            );
+            return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -84,13 +90,20 @@ public class CardController {
 
     @PreAuthorize("hasAuthority('write')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCard(@PathVariable long id) {
+    public ResponseEntity<?> deleteCard(@PathVariable long id) {
         try {
             cardService.deleteCard(id);
             return ResponseEntity.noContent().build();
 
         } catch (CardNotFoundException ex) {
             return ResponseEntity.notFound().build();
+            
+        } catch (SoapServiceException ex) {
+            Map<String, String> error = Map.of(
+                "error", "SOAP Service Error",
+                "message", ex.getMessage()
+            );
+            return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
         }
     }
 
