@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bindings version="3.0" xmlns="https://jakarta.ee/xml/ns/jaxb">
+  <!--
+
+Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
+Visite https://eclipse-ee4j.github.io/jaxb-ri 
+Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
+Generado el: 2025.11.01 a las 02:36:52 PM CST 
+
+  -->
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.miltonclashapi.com/api/cards">
+    <schemaBindings map="false">
+      <package name="com.clashroyale.clashcardapi.infrastructure.soap.generated"/>
+    </schemaBindings>
+    <bindings scd="~tns:cardList">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.CardList"/>
+    </bindings>
+    <bindings scd="tns:CardResponseDto">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.CardResponseDto"/>
+    </bindings>
+    <bindings scd="tns:getCardByIdRequest">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.GetCardByIdRequest"/>
+    </bindings>
+    <bindings scd="tns:createCardRequest">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.CreateCardRequest"/>
+    </bindings>
+    <bindings scd="tns:updateCardRequest">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.UpdateCardRequest"/>
+    </bindings>
+    <bindings scd="tns:deleteCardRequest">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.DeleteCardRequest"/>
+    </bindings>
+    <bindings scd="tns:deleteCardResponse">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.DeleteCardResponse"/>
+    </bindings>
+    <bindings scd="tns:getAllCardsRequest">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.GetAllCardsRequest"/>
+    </bindings>
+    <bindings scd="tns:getAllCardsResponse">
+      <class ref="com.clashroyale.clashcardapi.infrastructure.soap.generated.GetAllCardsResponse"/>
+    </bindings>
+  </bindings>
+</bindings>
+
