@@ -6,9 +6,24 @@ namespace PlayerLockerApi.Mappers;
 public static class LockerMapper
 {
 
-    public static Locker ToResponse(this Locker locker)
+   public static Locker ToResponse(this Locker locker)
     {
         return new Locker
+        {
+            Id = locker.Id,
+            Name = locker.Name,
+            Skin = locker.Skin,
+            Backblings = locker.Backblings,
+            Pickaxe = locker.Pickaxe,
+            Glider = locker.Glider,
+            Contrail = locker.Contrail,
+            Emote = locker.Emote
+        };
+    }
+
+    public static LockerResponse ToResponseGet(this Locker locker)
+    {
+        return new LockerResponse
         {
             Id = locker.Id,
             Name = locker.Name,
@@ -61,5 +76,7 @@ public static class LockerMapper
             Emote = document.Emote
         };
     }
+
+
 
 }
