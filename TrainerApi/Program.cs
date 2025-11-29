@@ -2,10 +2,12 @@ using MongoDB.Driver;
 using TrainerApi.Services;
 using TrainerApi.Infrastructure;
 using TrainerApi.Repositories;
+using TrainerApi.Infrastructure.Producers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
+builder.Services.AddSingleton<IMessageBrokerProducer, KafkaProducer>();
 
 builder.Services.Configure<MongoDBSettings>(
     builder.Configuration.GetSection("MongoDB"));

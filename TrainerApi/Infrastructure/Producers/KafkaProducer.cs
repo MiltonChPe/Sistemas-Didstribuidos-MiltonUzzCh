@@ -1,15 +1,82 @@
+using System.Text.Json;
+using Confluent.Kafka;
 using TrainerApi.Events;
 
 namespace TrainerApi.Infrastructure.Producers;
 
 public class KafkaProducer : IMessageBrokerProducer, IDisposable
-{   
-    public async Task ProduceAsync<T>(T message) where T : class, IEventMessage
+{      
+
+    private readonly IProducer<string, string> _producer;
+    private readonly ILogger<KafkaProducer> _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private bool _disposed = false;
+
+    public KafkaProducer(IConfiguration configuration, ILogger<KafkaProducer> logger)
     {
-        
+        _logger = logger;
+        var config = new ProducerConfig
+        {
+            BootstrapServers = configuration["Kafka:BootstrapServers"],
+            Acks = Acks.All,
+            EnableIdempotence = true,  
+        };
+        _producer = new ProducerBuilder<string, string>(config)
+            .SetErrorHandler((_, e) => _logger.LogError("Error in KafkaProducer: {Error}", e.Reason))
+            .Build();
+        _jsonSerializerOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = false
+        };
+    }
+
+
+    public async Task ProduceAsync<T>(T message, CancellationToken cancellationToken) where T : class, IEventMessage
+    {
+        if (_disposed)
+            throw new ObjectDisposedException(nameof(KafkaProducer));
+        try
+        {
+            var serializedMessage = JsonSerializer.Serialize(message, _jsonSerializerOptions);
+            var kafkaMessage = new Message<string, string>
+            {
+                Value = serializedMessage,
+                Key = message.GetEventKey() ?? Guid.NewGuid().ToString(),
+                Headers = new Headers()
+                {
+                    {"content-type", "application/json"u8.ToArray() },
+                    {"produce-at", System.Text.Encoding.UTF8.GetBytes(DateTime.UtcNow.ToString("O")) },
+                    {"idempotence-key", Guid.NewGuid().ToByteArray()}
+                }
+            };
+            //Trainer-created
+            //Trainer-updated
+            //Trainer-deleted
+            var result = await _producer.ProduceAsync(message.Topic, kafkaMessage, cancellationToken);
+            _logger.LogInformation("Message delivered to {Topic} partition {Partition} at offset {Offset} with key {Key}", message.Topic, result.Partition.Value, result.Offset.Value, message.GetEventKey());
+        }
+        catch (ProduceException<string, string> ex)
+        {
+            _logger.LogError("Error in kafka production: {Error} with key {Key}", ex.Error.Reason, message.GetEventKey());
+            throw;
+        }
+        catch (Exception ex)
+        {
+
+            _logger.LogError("Error in kafka production: {Error} with key {Key}", ex.Message, message.GetEventKey());
+          
+        }
+
     }
     public void Dispose()
     {
+        if (!_disposed)
+        {
+            _producer?.Flush(TimeSpan.FromSeconds(10));
+            _producer?.Dispose();
+            _disposed = true;
+        }
 
     }
    
