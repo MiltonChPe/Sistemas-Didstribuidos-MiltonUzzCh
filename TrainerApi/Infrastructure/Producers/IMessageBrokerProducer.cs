@@ -4,5 +4,5 @@ namespace TrainerApi.Infrastructure.Producers;
 
 public interface IMessageBrokerProducer
 {
-    Task ProduceAsync<T>(T message) where T : class, IEventMessage;
+    Task ProduceAsync<T>(T message, CancellationToken cancellationToken) where T : class, IEventMessage;
 }

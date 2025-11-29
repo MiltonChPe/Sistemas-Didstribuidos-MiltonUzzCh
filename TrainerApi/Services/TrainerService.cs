@@ -1,6 +1,8 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using TrainerApi.Events;
 using TrainerApi.Infrastructure.Documents;
+using TrainerApi.Infrastructure.Producers;
 using TrainerApi.Mappers;
 using TrainerApi.Models;
 using TrainerApi.Repositories;
@@ -10,9 +12,11 @@ namespace TrainerApi.Services;
 public class TrainerService : TrainerApi.TrainerService.TrainerServiceBase
 {
     private readonly ITrainerRepository _trainerRepository;
-    public TrainerService(ITrainerRepository trainerRepository)
+    private readonly IMessageBrokerProducer _producer;
+    public TrainerService(ITrainerRepository trainerRepository, IMessageBrokerProducer producer)
     {
         _trainerRepository = trainerRepository;
+        _producer = producer;
 
     }
     public override async Task<TrainerResponse> GetTrainerById(TrainerByIdRequest request, ServerCallContext context)
@@ -55,6 +59,22 @@ public class TrainerService : TrainerApi.TrainerService.TrainerServiceBase
             }
             var createdTrainer = await _trainerRepository.CreateAsync(trainer, context.CancellationToken);
             createdTrainers.Add(createdTrainer.ToResponse());
+
+            var ev = new TrainerCreatedEvent
+            {
+                Id = createdTrainer.Id,
+                Name = createdTrainer.Name,
+                Age = createdTrainer.Age,
+                BirthDate = createdTrainer.Birthdate,
+                CreatedAt = createdTrainer.CreatedAt,
+                Medals = createdTrainer.Medals.Select(m => new MedalEvent
+                {
+                    Region = m.Region,
+                    Type = m.Type.ToString()
+                }).ToList()
+            };
+
+            await _producer.ProduceAsync(ev, cancellationToken: context.CancellationToken);
         }
 
         return new CreateTrainerResponse
@@ -72,9 +92,18 @@ public class TrainerService : TrainerApi.TrainerService.TrainerServiceBase
         }
 
         var trainer = await GetTrainerAsync(request.Id, context.CancellationToken);
-        await _trainerRepository.DeleteAsync(request.Id, context.CancellationToken);
-        return new Empty();
+        await _trainerRepository.DeleteAsync(request.Id, context.CancellationToken);        
+        
+        var ev = new TrainerDeletedEvent
+        {
+            Id = trainer.Id,
+            Name = trainer.Name,
+            DeletedAt = DateTime.UtcNow
+        };
 
+        await _producer.ProduceAsync(ev, cancellationToken: context.CancellationToken);
+
+        return new Empty();
 
     }
     
@@ -105,9 +134,24 @@ public class TrainerService : TrainerApi.TrainerService.TrainerServiceBase
         {
             throw new RpcException(new Status(StatusCode.AlreadyExists, $"Trainer with Name {request.Name} already exists."));
         }
-
-
         await _trainerRepository.UpdateAsync(trainer, context.CancellationToken);
+
+        var ev = new TrainerUpdatedEvent
+        {
+            Id = trainer.Id,
+            Name = trainer.Name,
+            Age = trainer.Age,
+            BirthDate = trainer.Birthdate,
+            CreatedAt = trainer.CreatedAt,
+            Medals = trainer.Medals.Select(m => new MedalEvent
+            {
+                Region = m.Region,
+                Type = m.Type.ToString()
+            }).ToList()
+        };
+
+        await _producer.ProduceAsync(ev, cancellationToken: context.CancellationToken);
+
         return new Empty();
     }
     private async Task<Trainer> GetTrainerAsync(string id, CancellationToken cancellationToken)
