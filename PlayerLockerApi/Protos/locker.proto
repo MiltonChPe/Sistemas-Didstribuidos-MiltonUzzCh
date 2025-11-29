@@ -3,10 +3,45 @@ syntax = "proto3";
 package lockerpb;
 
 option csharp_namespace = "PlayerLockerApi";
+import "google/protobuf/empty.proto";
 
 
 service LockerService{
   rpc CreateLockers (stream CreateLockerRequest) returns (CreateLockerResponse);
+  rpc GetLockerById (LockerByIdRequest) returns (LockerResponse);
+  rpc DeleteLocker (LockerByIdRequest) returns (google.protobuf.Empty);
+  rpc UpdateLocker (UpdateLockerRequest) returns (google.protobuf.Empty);
+  rpc GetAllLockersByName (TrainerByNameRequest) returns (stream LockerResponse);
+}
+
+message UpdateLockerRequest{
+  string id = 1;
+  string name = 2;
+  string skin = 3;
+  string backblings = 4;
+  string pickaxe = 5;
+  string glider = 6;
+  string contrail = 7;
+  string emote = 8;
+}
+
+message TrainerByNameRequest{
+  string name = 1;
+}
+
+message LockerByIdRequest{
+  string id = 1;
+}
+
+message LockerResponse{
+  string id = 1;
+  string name = 2;
+  string skin = 3;
+  string backblings = 4;
+  string pickaxe = 5;
+  string glider = 6;
+  string contrail = 7;
+  string emote = 8;
 }
 
 message Locker{
