@@ -12,13 +12,46 @@ services:
       - SPRING_DATA_REDIS_HOST=redis-cache
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI=http://hydra-public:4444/.well-known/jwks.json
       - SOAP_API_URL=http://clash-royale-api:8080/ws
+      - GRPC_PLAYER_HOST=player-api
+      - GRPC_PLAYER_PORT=8080
     depends_on:
       - clash-royale-api
+      - player-api
       - redis-cache
       - hydra-public
       - hydra-admin
     networks:
       - clash-network
+
+  player-api:
+    build:
+      context: ..\PlayerApi
+      dockerfile: Dockerfile
+    container_name: player-api
+    ports:
+      - "8103:8080"
+    environment:
+      - MONGODB_CONNECTION_STRING=mongodb://player:playerpassword@player-mongodb:27017
+      - PORT=8080
+    depends_on:
+      - player-mongodb
+    networks:
+      - clash-network
+    restart: unless-stopped
+
+  player-mongodb:
+    image: mongo:latest
+    container_name: player-mongodb
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=player
+      - MONGO_INITDB_ROOT_PASSWORD=playerpassword
+    volumes:
+      - mongo_player_data:/data/db
+    networks:
+      - clash-network
+    restart: unless-stopped
 
   clash-royale-api:
     build: "../clashroyale"
@@ -137,6 +170,7 @@ volumes:
   mariadb_data:
   redis_data:
   hydra_data:
+  mongo_player_data:
 
 networks:
   clash-network:
