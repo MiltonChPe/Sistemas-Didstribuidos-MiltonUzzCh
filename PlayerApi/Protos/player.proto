@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package playerpb;
+
+option go_package = "playerapi/Pb";
+
+import "google/protobuf/empty.proto";
+
+service PlayerService {
+  rpc CreatePlayers (stream CreatePlayerRequest) returns (CreatePlayerResponse);
+  rpc GetPlayerById (PlayerByIdRequest) returns (PlayerResponse);
+  rpc DeletePlayer (PlayerByIdRequest) returns (google.protobuf.Empty);
+  rpc UpdatePlayer (UpdatePlayerRequest) returns (google.protobuf.Empty);
+  rpc GetAllPlayersByName (PlayerByNameRequest) returns (stream PlayerResponse);
+}
+
+message UpdatePlayerRequest {
+  string id = 1;
+  string name = 2;
+  int32 level = 3;
+  int32 trophies = 4;
+  string clan = 5;
+  int32 battles_played = 6;
+  int32 coins = 7;
+  int32 gems = 8;
+}
+
+message PlayerByNameRequest {
+  string name = 1;
+}
+
+message PlayerByIdRequest {
+  string id = 1;
+}
+
+message PlayerResponse {
+  string id = 1;
+  string name = 2;
+  int32 level = 3;
+  int32 trophies = 4;
+  string clan = 5;
+  int32 battles_played = 6;
+  int32 coins = 7;
+  int32 gems = 8;
+}
+
+message Player {
+  string id = 1;
+  string name = 2;
+  int32 level = 3;
+  int32 trophies = 4;
+  string clan = 5;
+  int32 battles_played = 6;
+  int32 coins = 7;
+  int32 gems = 8;
+}
+
+message CreatePlayerRequest {
+  string name = 1;
+  int32 level = 2;
+  int32 trophies = 3;
+  string clan = 4;
+  int32 battles_played = 5;
+  int32 coins = 6;
+  int32 gems = 7;
+}
+
+message CreatePlayerResponse {
+  repeated Player players = 1;
+}

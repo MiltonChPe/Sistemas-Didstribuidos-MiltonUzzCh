@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  playerapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8103:8080"
+    environment:
+      - MONGODB_CONNECTION_STRING=mongodb://player:playerpassword@mongodb:27017
+      - PORT=8080
+    depends_on:
+      - mongodb
+    networks:
+      - player-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27019:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=player
+      - MONGO_INITDB_ROOT_PASSWORD=playerpassword
+    volumes:
+      - mongo-player-data:/data/db
+    networks:
+      - player-network
+
+networks:
+  player-network:
+    driver: bridge
+
+volumes:
+  mongo-player-data:

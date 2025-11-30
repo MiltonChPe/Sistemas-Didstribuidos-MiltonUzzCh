@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.miltonclashapi.com/api/cards"
+           xmlns:tns="http://www.miltonclashapi.com/api/cards"
+           elementFormDefault="qualified">
+
+    <xs:element name="CardResponseDto">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Id" type="xs:long"/>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Type" type="xs:string"/>
+                <xs:element name="Rarity" type="xs:string"/>
+                <xs:element name="ElixirCost" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getCardByIdRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="createCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="rarity" type="xs:string"/>
+                <xs:element name="elixirCost" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="rarity" type="xs:string"/>
+                <xs:element name="elixirCost" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="id" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="deleteCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getAllCardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="page" type="xs:int"/>
+                <xs:element name="pageSize" type="xs:int"/>
+                <xs:element name="sortBy" type="xs:string"/>
+                <xs:element name="sortDirection" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getAllCardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cards" type="tns:cardList"/>
+                <xs:element name="currentPage" type="xs:int"/>
+                <xs:element name="totalPages" type="xs:int"/>
+                <xs:element name="totalElements" type="xs:long"/>
+                <xs:element name="pageSize" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="cardList">
+        <xs:sequence>
+            <xs:element name="card" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="Id" type="xs:long"/>
+                        <xs:element name="Name" type="xs:string"/>
+                        <xs:element name="Type" type="xs:string"/>
+                        <xs:element name="Rarity" type="xs:string"/>
+                        <xs:element name="ElixirCost" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
