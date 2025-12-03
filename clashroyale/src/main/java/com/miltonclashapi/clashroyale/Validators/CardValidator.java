@@ -4,6 +4,8 @@ package com.miltonclashapi.clashroyale.Validators;
 import org.springframework.stereotype.Component;
 
 import com.miltonclashapi.clashroyale.dtos.CreateCardDto;
+import com.miltonclashapi.clashroyale.dtos.GetAllCardsRequest;
+import com.miltonclashapi.clashroyale.dtos.UpdateCardDto;
 
 @Component
 public class CardValidator {
@@ -73,6 +75,62 @@ public class CardValidator {
             throw new IllegalArgumentException("Id required.");
         }
         return id;
+    }
+
+    public static UpdateCardDto validateUpdate(UpdateCardDto card) {
+ 
+    if (card.getId() == null || card.getId() <= 0) {
+        throw new IllegalArgumentException("Valid card ID is required for update");
+    }
+    CreateCardDto paraprobar = new CreateCardDto(
+        card.getName(),
+        card.getType(),
+        card.getRarity(),
+        card.getElixirCost()
+    );
+
+    validateName(paraprobar);
+    validateType(paraprobar);
+    validateRarity(paraprobar);
+    validateElixirCost(paraprobar);
+
+    return card;
+}
+
+    public static GetAllCardsRequest PaginationValidate(GetAllCardsRequest request) {
+        if (request.getPage() == null || request.getPage() < 0) {
+            request.setPage(0);
+        }
+        if (request.getPageSize() == null || request.getPageSize() < 1) {
+            request.setPageSize(10);
+        }
+        if (request.getPageSize() > 20) {
+            request.setPageSize(20); 
+        }
+        
+        String[] sort = {"name", "type", "rarity", "elixirCost", "id"};
+        boolean isValidSortBy = false;
+        if (request.getSortBy() != null) {
+            for (String validField : sort) {
+                if (validField.equalsIgnoreCase(request.getSortBy())) {
+                    request.setSortBy(validField);
+                    isValidSortBy = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!isValidSortBy) {
+            request.setSortBy("name");
+        }
+        
+        if (request.getSortDirection() == null || 
+            (!request.getSortDirection().equalsIgnoreCase("asc") && 
+             !request.getSortDirection().equalsIgnoreCase("desc"))) {
+            request.setSortDirection("asc");
+        }
+        
+        return request;
     }
 
     public static CreateCardDto validateAll(CreateCardDto card) {
