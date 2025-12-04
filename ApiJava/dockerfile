@@ -1,0 +1,9 @@
+FROM openjdk:17-slim as build
+WORKDIR /app
+COPY MiNombre.java .
+RUN javac MiNombre.java
+
+FROM openjdk:17-slim
+WORKDIR /app
+COPY --from=build /app/MiNombre.class .
+CMD ["java", "MiNombre"]
